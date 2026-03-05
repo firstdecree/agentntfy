@@ -1,0 +1,11 @@
+[web]
+port = 8080
+url = "http://localhost:8080" # Do not add / at last.
+
+[deception]
+redirect = "https://www.youtube.com/watch?v=dQw4w9WgXcQ" # Default is Rickroll.
+
+[database] # MongoDB
+clusterURL = "" # Your database cluster URL with the credential.
+database = "" # The name of the database where the collection is located.
+messagesCollection = "" # The name of the collection where messages are stored.

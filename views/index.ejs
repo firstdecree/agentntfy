@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promotion</title>
+    <style>
+        :root {
+            --bg-color: #050505;
+            --container-bg: #0a0a0a;
+            --text-color: #d4d4d4;
+            --border-color: #222;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: var(--container-bg);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            position: relative;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: opacity 1s ease, transform 1s ease;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .container.open {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(255, 255, 255, 0.01) 50%,
+                    rgba(0, 0, 0, 0.05) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .header {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .header .status {
+            color: var(--text-color);
+            transition: color 0.3s, text-shadow 0.3s;
+        }
+
+        .message {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            min-height: 100px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 1.1em;
+            background-color: #fff;
+            vertical-align: middle;
+            margin-left: 2px;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        #raw-message {
+            display: none;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="raw-message">
+        <%= message %>
+    </div>
+
+    <div class="container" id="terminal">
+        <div class="header">
+            <span>SYS.MSG.RECV</span>
+            <span class="status" id="status-text">DECRYPTING...</span>
+        </div>
+        <div class="message" id="output"></div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const rawMessageEle = document.getElementById("raw-message")
+            const rawMessage = (rawMessageEle.textContent || rawMessageEle.innerText).trim()
+            const container = document.getElementById("terminal")
+            const output = document.getElementById("output")
+            const statusText = document.getElementById("status-text")
+
+            setTimeout(() => {
+                container.classList.add("open")
+                setTimeout(() => startDecrypt(rawMessage), 500)
+            }, 300)
+
+            function startDecrypt(text) {
+                const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$&*[]{}|;:,.<>?"
+                let iteration = 0
+
+                const revealSpeed = Math.max(0.3, text.length / 60)
+
+                let interval = setInterval(() => {
+                    output.textContent = text
+                        .split("")
+                        .map((char, index) => {
+                            if (index < iteration) {
+                                return char
+                            }
+                            if (char.trim() === "") {
+                                return char
+                            }
+                            return chars[Math.floor(Math.random() * chars.length)]
+                        })
+                        .join("")
+
+                    if (iteration >= text.length) {
+                        clearInterval(interval)
+                        output.textContent = text
+
+                        const cursor = document.createElement("span")
+                        cursor.className = "cursor"
+                        output.appendChild(cursor)
+
+                        statusText.textContent = "DECRYPTED"
+                        statusText.style.color = "#4af626"
+                        statusText.style.textShadow = "0 0 8px rgba(74, 246, 38, 0.3)"
+                    }
+
+                    iteration += revealSpeed
+                }, 30)
+            }
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,9 @@
+[Important Notification]
+
+We attempted to apply a 10% promotional credit to your account, but action is required to complete the process.
+
+To avoid forfeiting your credit, please verify your details immediately by visiting the secure link below:
+
+{url}
+
+This link will expire shortly for security reasons.
