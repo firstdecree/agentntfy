@@ -41,3 +41,7 @@ Pushing a message.
 ```
 node push.js <agentCode>
 ```
+
+<div align="center">
+  <sub>This project is distributed under <a href="/LICENSE"><b>MIT License</b></a></sub>
+</div>
