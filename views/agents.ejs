@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentNTFY - Agents</title>
+    <style>
+        :root {
+            --bg-color: #050505;
+            --sidebar-bg: #080808;
+            --card-bg: #0a0a0a;
+            --text-color: #d4d4d4;
+            --accent-color: #4af626;
+            --border-color: #1a1a1a;
+            --active-bg: rgba(74, 246, 38, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body,
+        html {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: "Courier New", Courier, monospace;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 200px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem 1rem;
+            position: relative;
+            z-index: 20;
+        }
+
+        .sidebar::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(255, 255, 255, 0.005) 50%, rgba(0, 0, 0, 0.02) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+
+        .sidebar-brand {
+            font-size: 0.6rem;
+            color: #333;
+            letter-spacing: 0.15rem;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.6rem 1rem;
+            color: #555;
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            letter-spacing: 0.04rem;
+        }
+
+        .nav-item:hover {
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.01);
+            transform: translateX(3px);
+        }
+
+        .nav-item.active {
+            color: var(--accent-color);
+            border-color: rgba(74, 246, 38, 0.3);
+            background: var(--active-bg);
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .navbar {
+            height: 50px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            background: var(--bg-color);
+        }
+
+        .navbar-logo {
+            letter-spacing: 0.3rem;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--text-color);
+            opacity: 0.9;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .add-btn {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            cursor: pointer;
+            transition: all 0.3s;
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+        }
+
+        .add-btn:hover {
+            text-shadow: 0 0 10px var(--accent-color);
+            transform: scale(1.1);
+        }
+
+        .content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            position: relative;
+            z-index: 5;
+        }
+
+        .content::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(255, 255, 255, 0.01) 50%, rgba(0, 0, 0, 0.05) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        th {
+            text-align: left;
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+            color: #555;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 1.2rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.01);
+            color: var(--text-color);
+        }
+
+        .id-pill {
+            background: #000;
+            border: 1px solid #222;
+            padding: 0.4rem 0.8rem;
+            color: #777;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: inherit;
+            cursor: copy;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .id-pill:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(74, 246, 38, 0.1);
+        }
+
+        .id-pill:active {
+            transform: scale(0.98);
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        .action-btn {
+            background: none;
+            border: 1px solid #222;
+            padding: 0.4rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #555;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-btn:hover {
+            border-color: #444;
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .action-btn.send-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(74, 246, 38, 0.1);
+        }
+
+        .action-btn.trash-btn:hover {
+            border-color: #ff3b3b;
+            color: #ff3b3b;
+            box-shadow: 0 0 10px rgba(255, 59, 59, 0.1);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal {
+            background: var(--card-bg);
+            border: 1px solid var(--accent-color);
+            padding: 2rem;
+            width: 600px;
+            box-shadow: 0 0 30px rgba(74, 246, 38, 0.1);
+        }
+
+        .modal-title {
+            text-transform: uppercase;
+            letter-spacing: 0.2rem;
+            color: var(--accent-color);
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.7rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        input, textarea {
+            width: 100%;
+            background: #000;
+            border: 1px solid #333;
+            color: var(--text-color);
+            padding: 0.75rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--accent-color);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            background: none;
+            border: 1px solid #333;
+            color: #666;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            font-family: inherit;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            color: var(--text-color);
+            border-color: #555;
+        }
+
+        .btn-primary {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .btn-primary:hover {
+            background: var(--active-bg);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        /* Scanline Overlay */
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 15;
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.01) 50%, rgba(0, 0, 0, 0) 100%);
+            opacity: 0.1;
+            position: absolute;
+            bottom: 100%;
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scanline {
+            0% {
+                bottom: 100%;
+            }
+
+            100% {
+                bottom: -100px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="scanline"></div>
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">> SIDEBAR</div>
+        <nav class="sidebar-nav">
+            <a href="/" class="nav-item">DASHBOARD</a>
+            <a href="/agents" class="nav-item active">AGENTS</a>
+        </nav>
+    </aside>
+
+    <main class="main-container">
+        <header class="navbar">
+            <div class="navbar-logo">AgentNTFY</div>
+            <button class="add-btn" id="openAddModal">+</button>
+        </header>
+
+        <section class="content">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Agent Name</th>
+                        <th>Notification ID</th>
+                        <th style="width: 100px; text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="agent-table-body">
+                    <% agentsList.forEach(agent => { %>
+                        <tr>
+                            <td style="font-weight: bold; border-left: 2px solid transparent;"><%= agent.name %></td>
+                            <td>
+                                <div class="id-pill" onclick='copyId("<%= agent.id %>", this)'>
+                                    <%= agent.id %>
+                                </div>
+                            </td>
+                            <td class="actions">
+                                <button class="action-btn send-btn" onclick='openPushModal("<%= agent.name %>", "<%= agent.id %>")' title="Send Message">✈️</button>
+                                <button class="action-btn trash-btn" onclick='deleteAgent("<%= agent.id %>")' title="Decommission Agent">🗑</button>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <!-- Add Agent Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-title">Authorized New Agent</div>
+            <div class="form-group">
+                <label>Identifier Name</label>
+                <input type="text" id="agentName" placeholder="e.g. NCryptsion" autocomplete="off">
+            </div>
+            <div class="btn-group">
+                <button class="btn" id="closeModal">Cancel</button>
+                <button class="btn btn-primary" id="saveAgent">Finalize</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Send Message Modal -->
+    <div class="modal-overlay" id="pushModalOverlay">
+        <div class="modal">
+            <div class="modal-title">Send Message to <span id="targetAgentName" style="color: #fff;"></span></div>
+            <div style="font-size: 0.75rem; color: #666; margin-bottom: 1rem; line-height: 1.4;">
+                Always double check everything. Ensure to add {url} so the system can know where to send the shorten link.
+            </div>
+            <div class="form-group">
+                <label>Secure Content</label>
+                <textarea id="pushMessage" placeholder="Type your secure message here..." style="height: 200px; resize: none;"></textarea>
+            </div>
+            <div class="btn-group">
+                <button class="btn" id="closePushModal">Cancel</button>
+                <button class="btn btn-primary" id="finalizePush">Dispatch</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const modalOverlay = document.getElementById("modalOverlay")
+        const pushModalOverlay = document.getElementById("pushModalOverlay")
+        const openAddModal = document.getElementById("openAddModal")
+        const closeModal = document.getElementById("closeModal")
+        const closePushModal = document.getElementById("closePushModal")
+        const saveAgent = document.getElementById("saveAgent")
+        const finalizePush = document.getElementById("finalizePush")
+        const agentNameInput = document.getElementById("agentName")
+        const pushMessageInput = document.getElementById("pushMessage")
+        const targetAgentName = document.getElementById("targetAgentName")
+
+        let currentAgentId = null
+
+        function copyId(id, el) {
+            navigator.clipboard.writeText(id)
+            const originalText = el.textContent
+            el.textContent = "COPIED"
+            el.style.borderColor = "#4af626"
+            el.style.color = "#4af626"
+            setTimeout(() => {
+                el.textContent = originalText
+                el.style.borderColor = ""
+                el.style.color = ""
+            }, 1000)
+        }
+
+        function openPushModal(name, id) {
+            currentAgentId = id
+            targetAgentName.textContent = name
+            pushModalOverlay.style.display = "flex"
+            pushMessageInput.focus()
+        }
+
+        closePushModal.onclick = () => {
+            pushModalOverlay.style.display = "none"
+            pushMessageInput.value = ""
+            currentAgentId = null
+        }
+
+        finalizePush.onclick = async () => {
+            const message = pushMessageInput.value.trim()
+            if (!message) return alert("Message content is required")
+
+            finalizePush.disabled = true
+            finalizePush.textContent = "DISPATCHING..."
+
+            const response = await fetch("/agents/push", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: currentAgentId, message })
+            })
+
+            if (await response.text() === "1") {
+                alert("Secure message dispatched successfully.")
+                pushModalOverlay.style.display = "none"
+                pushMessageInput.value = ""
+            } else {
+                alert("Dispatch failure. Check system logs.")
+            }
+            
+            finalizePush.disabled = false
+            finalizePush.textContent = "Dispatch"
+        }
+
+        openAddModal.onclick = () => {
+            modalOverlay.style.display = "flex"
+            agentNameInput.focus()
+        }
+
+        closeModal.onclick = () => {
+            modalOverlay.style.display = "none"
+            agentNameInput.value = ""
+        }
+
+        saveAgent.onclick = async () => {
+            const name = agentNameInput.value.trim()
+            if (!name) return alert("Name is required")
+
+            const response = await fetch("/agents/add", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name })
+            })
+
+            if (await response.text() === "1") {
+                window.location.reload()
+            } else {
+                alert("Error adding agent")
+            }
+        }
+
+        async function deleteAgent(id) {
+            if (!confirm("Are you sure you want to decommission this agent?")) return
+
+            const response = await fetch("/agents/delete", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id })
+            })
+
+            if (await response.text() === "1") {
+                window.location.reload()
+            } else {
+                alert("Error deleting agent")
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -4,203 +4,310 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Promotion</title>
+    <title>AgentNTFY - Dashboard</title>
     <style>
         :root {
             --bg-color: #050505;
-            --container-bg: #0a0a0a;
+            --sidebar-bg: #080808;
+            --card-bg: #0a0a0a;
             --text-color: #d4d4d4;
-            --border-color: #222;
+            --accent-color: #4af626;
+            --border-color: #1a1a1a;
+            --active-bg: rgba(74, 246, 38, 0.05);
         }
 
         * {
             box-sizing: border-box;
+            user-select: none;
         }
 
         body,
         html {
             height: 100%;
+            width: 100%;
             margin: 0;
+            padding: 0;
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Courier New', Courier, monospace;
+            font-family: "Courier New", Courier, monospace;
             display: flex;
-            align-items: center;
-            justify-content: center;
             overflow: hidden;
         }
 
-        .container {
-            width: 95%;
-            max-width: 1000px;
-            max-height: 90vh;
-            overflow-y: auto;
-            overflow-x: hidden;
-            background: var(--container-bg);
-            border: 1px solid var(--border-color);
-            padding: 2rem;
+        /* Sidebar */
+        .sidebar {
+            width: 200px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem 1rem;
             position: relative;
-            transform: translateY(20px);
-            opacity: 0;
-            transition: opacity 1s ease, transform 1s ease;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            z-index: 20;
         }
 
-        .container.open {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .container::before {
+        .sidebar::after {
             content: "";
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(rgba(255, 255, 255, 0.01) 50%,
-                    rgba(0, 0, 0, 0.05) 50%);
+            background: linear-gradient(rgba(255, 255, 255, 0.005) 50%, rgba(0, 0, 0, 0.02) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+
+        .sidebar-brand {
+            font-size: 0.6rem;
+            color: #333;
+            letter-spacing: 0.15rem;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.6rem 1rem;
+            color: #555;
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            letter-spacing: 0.04rem;
+        }
+
+        .nav-item:hover {
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.01);
+            transform: translateX(3px);
+        }
+
+        .nav-item.active {
+            color: var(--accent-color);
+            border-color: rgba(74, 246, 38, 0.3);
+            background: var(--active-bg);
+        }
+
+        /* Main Container */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Navbar */
+        .navbar {
+            height: 50px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-color);
+        }
+
+        .navbar-logo {
+            letter-spacing: 0.3rem;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--text-color);
+            opacity: 0.9;
+        }
+
+        /* Dashboard Content */
+        .content {
+            flex: 1;
+            padding: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 1rem;
+            position: relative;
+            z-index: 5;
+        }
+
+        .content::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(255, 255, 255, 0.01) 50%, rgba(0, 0, 0, 0.05) 50%);
             background-size: 100% 4px;
             pointer-events: none;
             z-index: 10;
         }
 
-        .header {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: #666;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.75rem;
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            flex: 1;
+            min-width: 200px;
+            height: 130px;
+            text-align: center;
             display: flex;
-            justify-content: space-between;
-        }
-
-        .header .status {
-            color: var(--text-color);
-            transition: color 0.3s, text-shadow 0.3s;
-        }
-
-        .message {
-            font-size: 1.05rem;
-            line-height: 1.6;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            min-height: 100px;
+            flex-direction: column;
+            justify-content: center;
             position: relative;
-            z-index: 2;
+            transition: all 0.3s ease;
         }
 
-        .cursor {
-            display: inline-block;
-            width: 8px;
-            height: 1.1em;
-            background-color: #fff;
-            vertical-align: middle;
-            margin-left: 2px;
-            animation: blink 1s step-end infinite;
+        .card:hover {
+            border-color: #333;
+            background: rgba(255, 255, 255, 0.01);
+            transform: translateY(-5px);
         }
 
-        @keyframes blink {
+        .card-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+            color: #555;
+            margin-bottom: 0.75rem;
+        }
 
-            0%,
+        .card-value {
+            font-size: 2.5rem;
+            color: var(--text-color);
+            transition: all 0.3s;
+        }
+
+        .card:hover .card-value {
+            color: var(--accent-color);
+            text-shadow: 0 0 15px rgba(74, 246, 38, 0.3);
+        }
+
+        /* Scanline Overlay */
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 15;
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.01) 50%, rgba(0, 0, 0, 0) 100%);
+            opacity: 0.1;
+            position: absolute;
+            bottom: 100%;
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+        }
+
+        .purge-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            position: relative;
+            z-index: 20;
+        }
+
+        .btn-purge {
+            background: none;
+            border: 1px solid #ff3b3b;
+            color: #ff3b3b;
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            font-family: inherit;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.1rem;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-purge:hover {
+            background: rgba(255, 59, 59, 0.05);
+            box-shadow: 0 0 20px rgba(255, 59, 59, 0.1);
+            border-color: #ff5555;
+            color: #ff5555;
+        }
+
+        @keyframes scanline {
+            0% {
+                bottom: 100%;
+            }
+
             100% {
-                opacity: 1;
+                bottom: -100px;
             }
-
-            50% {
-                opacity: 0;
-            }
-        }
-
-        #raw-message {
-            display: none;
-        }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #333;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #555;
         }
     </style>
 </head>
 
 <body>
+    <div class="scanline"></div>
 
-    <div id="raw-message">
-        <%= message %>
-    </div>
+    <aside class="sidebar">
+        <div class="sidebar-brand">> SIDEBAR</div>
+        <nav class="sidebar-nav">
+            <a href="/" class="nav-item active">DASHBOARD</a>
+            <a href="/agents" class="nav-item">AGENTS</a>
+        </nav>
+    </aside>
 
-    <div class="container" id="terminal">
-        <div class="header">
-            <span>SYS.MSG.RECV</span>
-            <span class="status" id="status-text">DECRYPTING...</span>
-        </div>
-        <div class="message" id="output"></div>
-    </div>
+    <main class="main-container">
+        <header class="navbar">
+            <div class="navbar-logo">AgentNTFY</div>
+        </header>
+
+        <section class="content">
+            <div class="purge-container">
+                <a href="/?purge=agents" class="btn-purge" onclick='return confirm("Are you sure you want to permanently delete all records of all agents?")'>Purge all agents</a>
+                <a href="/?purge=messages" class="btn-purge" onclick='return confirm("Are you sure you want to permanently delete all messages sent to agents?")'>Purge all messages</a>
+            </div>
+
+            <div class="card">
+                <div class="card-label">Agents</div>
+                <div class="card-value">
+                    <%= agentsCount %>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-label">Concealment Messages</div>
+                <div class="card-value">
+                    <%= messagesCount %>
+                </div>
+            </div>
+        </section>
+    </main>
 
     <script>
+        // Subtle interaction: card values counting up
         document.addEventListener("DOMContentLoaded", () => {
-            const rawMessageEle = document.getElementById("raw-message")
-            const rawMessage = (rawMessageEle.textContent || rawMessageEle.innerText).trim()
-            const container = document.getElementById("terminal")
-            const output = document.getElementById("output")
-            const statusText = document.getElementById("status-text")
+            const values = document.querySelectorAll(".card-value")
+            values.forEach(val => {
+                const target = parseInt(val.textContent)
+                if (isNaN(target)) return
 
-            setTimeout(() => {
-                container.classList.add("open")
-                setTimeout(() => startDecrypt(rawMessage), 500)
-            }, 300)
+                let current = 0
+                const duration = 1000
+                const step = target / (duration / 16)
 
-            function startDecrypt(text) {
-                const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$&*[]{}|;:,.<>?"
-                let iteration = 0
-
-                const revealSpeed = Math.max(0.3, text.length / 60)
-
-                let interval = setInterval(() => {
-                    output.textContent = text
-                        .split("")
-                        .map((char, index) => {
-                            if (index < iteration) {
-                                return char
-                            }
-                            if (char.trim() === "") {
-                                return char
-                            }
-                            return chars[Math.floor(Math.random() * chars.length)]
-                        })
-                        .join("")
-
-                    if (iteration >= text.length) {
-                        clearInterval(interval)
-                        output.textContent = text
-
-                        const cursor = document.createElement("span")
-                        cursor.className = "cursor"
-                        output.appendChild(cursor)
-
-                        statusText.textContent = "DECRYPTED"
-                        statusText.style.color = "#4af626"
-                        statusText.style.textShadow = "0 0 8px rgba(74, 246, 38, 0.3)"
+                const update = () => {
+                    current += step
+                    if (current >= target) {
+                        val.textContent = target
+                    } else {
+                        val.textContent = Math.floor(current)
+                        requestAnimationFrame(update)
                     }
+                }
 
-                    iteration += revealSpeed
-                }, 30)
-            }
+                val.textContent = "0"
+                setTimeout(update, 500)
+            })
         })
     </script>
 </body>

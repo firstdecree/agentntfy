@@ -1,4 +1,4 @@
-<div align="center"><img src="https://i.ibb.co/rGJd2Crq/064030505035533.png"/></div>
+<div align="center"><img src="./banner.png"/><img src="https://i.ibb.co/rGJd2Crq/064030505035533.png"/></div>
 
 # AgentNTFY
 Read a secure one-time message delivered with a Sci-Fi aesthetic.
@@ -21,25 +21,16 @@ pnpm install
 
 # 🛠️ Setup
 ## Web
-Please open `config.toml.example`. All required configuration options are provided there, along with detailed comments explaining each setting.
+Please open `example.config.toml`. All required configuration options are provided there, along with detailed comments explaining each setting.
 
 1. First, deploy AgentNTFY to a hosting platform such as Vercel.
 2. After deployment, add the hosted URL to `config.toml` under `web -> url`.
-
-
-## Pushing
-1. The application leverages simulated advertisements or promotional content to deliver its messages. You may add or modify entries within the `fake-ads` directory. The `{url}` placeholder is used by the program to determine where to insert the shortened URL.
-2. You may add new agents to `agents.json`. Each agent must have the corresponding secret string configured in their ntfy settings (which they must subscribe to).
-3. To customize the message sent to a specific agent, edit `message.txt`. Once completed, run `node push.js <agentCode>` to upload the data to the database and notify the agent.
+3. If you haven't already set your security useragent at `login -> userAgent` and set it as your browser useragent to access the panel.
 
 # 🚀 Usage
-The web app.
+After running, visit http://localhost:8080/
 ```
 node index.js
-```
-Pushing a message.
-```
-node push.js <agentCode>
 ```
 
 <div align="center">
